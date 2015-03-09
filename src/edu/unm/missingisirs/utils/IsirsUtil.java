@@ -86,8 +86,8 @@ public class IsirsUtil {
 
 	public static void findFafsaTransactionsInSuspense(HashMap<String, HashSet<Integer>> fafsaTransactionsInSuspenseBySsnMap, String aidYear, String username, String password)
 			throws ClassNotFoundException, SQLException {
-		// String url = "jdbc:oracle:thin:@stella.unm.edu:1523:DEVL";
-		String url = "jdbc:oracle:thin:@sct3.unm.edu:1523:BANP";
+		 String url = "jdbc:oracle:thin:@stella.unm.edu:1523:DEVL";
+//		String url = "jdbc:oracle:thin:@sct3.unm.edu:1523:BANP";
 		Connection conn = null;
 		InputStream fis = null;
 
@@ -151,8 +151,8 @@ public class IsirsUtil {
 	public static void findFafsasToLoad(HashMap<String, ArrayList<String>> listBySsnMap, ArrayList<String> fafsaTransToLoadList, ArrayList<String> fafsaTransToNotLoadList,
 			ArrayList<String> fafsaTransKidsNotInDB, String aidYear, String username, String password, ArrayList<String> fafsasFromIsirFilesThatAreAlreadyInSuspenseList,
 			HashMap<String, HashSet<Integer>> fafsaTransactionsInSuspenseBySsnMap) throws ClassNotFoundException, SQLException {
-		//String url = "jdbc:oracle:thin:@stella.unm.edu:1523:DEVL";
-				String url = "jdbc:oracle:thin:@sct3.unm.edu:1523:BANP";
+		String url = "jdbc:oracle:thin:@stella.unm.edu:1523:DEVL";
+//				String url = "jdbc:oracle:thin:@sct3.unm.edu:1523:BANP";
 				Connection conn = null;
 				InputStream fis = null;
 
@@ -739,8 +739,8 @@ public class IsirsUtil {
 
 		}
 
-		// String url = "jdbc:oracle:thin:@stella.unm.edu:1523:DEVL";
-		String url = "jdbc:oracle:thin:@sct3.unm.edu:1523:BANP";
+		 String url = "jdbc:oracle:thin:@stella.unm.edu:1523:DEVL";
+//		String url = "jdbc:oracle:thin:@sct3.unm.edu:1523:BANP";
 		Connection conn = null;
 		InputStream fis = null;
 

@@ -14,14 +14,14 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>missingisirs</servlet-name>
-        <url-pattern>/upload.jsp</url-pattern>
-        <url-pattern>/upload.html</url-pattern>
+        <url-pattern>/welcome.jsp</url-pattern>
+        <url-pattern>/welcome.html</url-pattern>
         <url-pattern>*.html</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping>
         <servlet-name>missingisirs</servlet-name>
-        <url-pattern>/upload</url-pattern>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
     
 </web-app>
