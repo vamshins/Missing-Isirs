@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
 import edu.unm.missingisirs.beans.IsirsBean;
+import edu.unm.missingisirs.form.FileProcess;
 import edu.unm.missingisirs.form.FileUpload;
 import edu.unm.missingisirs.utils.IsirsUtil;
 
@@ -37,7 +38,6 @@ public class FileUploadController {
 	public String isirsSave(@ModelAttribute("uploadForm") FileUpload uploadForm, Model map) throws IllegalStateException, IOException {
 		// String saveDirectory = "E:/ISIRS/";
 		String saveDirectory = this.uploadServerPath;
-
 		List<MultipartFile> isirsFiles = uploadForm.getFiles();
 
 		List<String> fileNames = new ArrayList<String>();
@@ -59,13 +59,14 @@ public class FileUploadController {
 	}
 
 	@RequestMapping(value = "/processfiles", method = RequestMethod.POST)
-	public String isirsProcess(@ModelAttribute("processForm") String aidYear, Model mapprocess) throws IllegalStateException, IOException {
+	public String isirsProcess(@ModelAttribute("processForm") FileProcess fileProcess, Model mapprocess) throws IllegalStateException, IOException {
 		// String saveDirectory = "E:/ISIRS/";
 		IsirsBean ib = new IsirsBean();
 		String saveDirectory = this.uploadServerPath;
 		System.out.println(saveDirectory);
 		ib.listBySsnMap = IsirsUtil.loadHashMap(saveDirectory);
-
+		String aidYear = fileProcess.getAidYear();
+		System.out.println(aidYear);
 		try {
 
 			// Finds the fafsas that are currently in suspense
