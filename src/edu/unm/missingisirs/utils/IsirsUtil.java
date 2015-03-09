@@ -948,20 +948,41 @@ public class IsirsUtil {
 			report.println("These are FAFSAs that will never get loaded because they are less than the MAX fafsa transaction (or we will load a higher Fafsa Trans Number):");
 			report.println("--------------------------------");
 
-			TreeMap<String, String> fafsasThatHaveNeverBeenLoadedTreeMap = new TreeMap<String, String>();
+			TreeMap<String, ArrayList<String>> fafsasThatHaveNeverBeenLoadedTreeMap = new TreeMap<String, ArrayList<String>>();
 
 			for (String fafsaTransaction : fafsasThatHaveNeverBeenLoadedList) {
 				String nameOfPerson = fafsaTransaction.substring(14, 40);
 				String ssnOfPerson = fafsaTransaction.substring(1, 10);
 				String keyInMap = nameOfPerson + " " + ssnOfPerson;
 
-				fafsasThatHaveNeverBeenLoadedTreeMap.put(keyInMap, fafsaTransaction);
+				//If the map already has a list of the fafsas that will never be loaded...
+				if (fafsasThatHaveNeverBeenLoadedTreeMap.containsKey(keyInMap))
+				{
+					ArrayList<String> fafsasNeverLoadedList = fafsasThatHaveNeverBeenLoadedTreeMap.get(keyInMap);
+					fafsasNeverLoadedList.add(fafsaTransaction);
+					
+				}
+				else
+				{
+					//Else the map does not contain a list of the fafsas for the particular student...
+					ArrayList<String> fafsasNeverLoadedList = new ArrayList<String>();
+					
+					fafsasNeverLoadedList.add(fafsaTransaction);
+					fafsasThatHaveNeverBeenLoadedTreeMap.put(keyInMap, fafsasNeverLoadedList);
+				}
 
 			}// end for
 
-			for (Map.Entry<String, String> entry : fafsasThatHaveNeverBeenLoadedTreeMap.entrySet()) {
-				String fafsaTransaction = entry.getValue();
-				report.println(fafsaTransaction);
+			for(Map.Entry<String, ArrayList<String>> entry : fafsasThatHaveNeverBeenLoadedTreeMap.entrySet())
+			{
+				 ArrayList<String> fafsaTransactionList = entry.getValue();
+				 
+				 for (String fafsa: fafsaTransactionList)
+				 {
+					 report.println(fafsa);
+				 }
+				 
+				 
 			}
 
 			report.println(" ");
