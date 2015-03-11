@@ -15,7 +15,7 @@
 								.click(
 										function() {
 											var fileIndex = $('#fileTable tr')
-													.children().length - 1;
+													.children().length;
 											$('#fileTable')
 													.append(
 															'<tr><td>'

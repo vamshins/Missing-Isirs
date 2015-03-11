@@ -12,16 +12,18 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class IsirsUtil {
+import org.apache.log4j.Logger;
 
+import edu.unm.missingisirs.constants.Constants;
+
+public class IsirsUtil {
+	private static final Logger logger = Logger.getLogger(IsirsUtil.class);
 	public static HashMap<String, ArrayList<String>> loadHashMap(String saveDirectory) {
 		HashMap<String, ArrayList<String>> listBySsnMap = new HashMap<String, ArrayList<String>>();
 		// Opening up current directory to get the ISIR files
@@ -29,6 +31,11 @@ public class IsirsUtil {
 		File[] files = dir.listFiles();
 		// loop through files
 		for (File f : files) {
+			try {
+				logger.info("File found : " + f.getCanonicalPath());
+			} catch (IOException e1) {
+				logger.info(e1.getMessage());
+			}
 			if (f.isFile()) {
 				BufferedReader inputStream = null;
 				// start reading in lines from files
@@ -86,6 +93,8 @@ public class IsirsUtil {
 
 	public static void findFafsaTransactionsInSuspense(HashMap<String, HashSet<Integer>> fafsaTransactionsInSuspenseBySsnMap, String aidYear, String username, String password)
 			throws ClassNotFoundException, SQLException {
+		
+		logger.info("Finding Fafsa Transactions In Suspense. (findFafsaTransactionsInSuspense)");
 		 String url = "jdbc:oracle:thin:@stella.unm.edu:1523:DEVL";
 //		String url = "jdbc:oracle:thin:@sct3.unm.edu:1523:BANP";
 		Connection conn = null;
@@ -162,7 +171,7 @@ public class IsirsUtil {
 				//Begin looping through every person in the HashMap...
 				for(Map.Entry<String, ArrayList<String>> entry : listBySsnMap.entrySet())
 				{
-				    System.out.println(counter);
+				    logger.info(counter);
 					counter++;
 
 					String ssn = entry.getKey(); //get SSN from hashmap
@@ -173,7 +182,7 @@ public class IsirsUtil {
 
 				    if (conn == null)
 				    {
-				    	System.out.println("Creating DB Connection");
+				    	logger.info("Creating DB Connection");
 				    	conn = createDatabaseConnection(username, password, url);
 				    }
 
@@ -208,7 +217,7 @@ public class IsirsUtil {
 				    if (counter > 500)
 				      {
 				    	  counter = 0;
-				    	  System.out.println("Closing DB Connection");
+				    	  logger.info("Closing DB Connection");
 				    	  conn.close();
 				    	  conn = null;
 				      }
@@ -426,7 +435,7 @@ public class IsirsUtil {
 			String ssn, ArrayList<String> fafsaList) 
 
 	{
-		System.out.println(ssn + "has no loaded FAFSAs.");
+		logger.info(ssn + "has no loaded FAFSAs.");
 
 		  //If there is more than one Fafsa in the ISIR files
 		  //then we need to determine which one of those we 
@@ -748,12 +757,12 @@ public class IsirsUtil {
 		int counter = 0;
 
 		for (Map.Entry<String, ArrayList<String>> entry : listBySsnMap.entrySet()) {
-			System.out.println(counter);
+//			logger.info(counter);
 
 			String ssn = entry.getKey(); // get SSN from hashmap
 
 			if (conn == null) {
-				System.out.println("Creating DB Connection");
+				logger.info("Creating DB Connection");
 				conn = createDatabaseConnection(username, password, url);
 			}
 
@@ -794,7 +803,7 @@ public class IsirsUtil {
 
 			if (counter > 500) {
 				counter = 0;
-				System.out.println("Closing DB Connection");
+				logger.info("Closing DB Connection");
 				conn.close();
 				conn = null;
 			}
@@ -830,7 +839,7 @@ public class IsirsUtil {
 					Integer fafsaTrans = Integer.parseInt(fafsaTransString);
 
 					if (fafsasThatWeHave.contains(fafsaTrans)) {
-						System.out.println("We have this one.");
+						logger.info("We have this one.");
 					} else {
 						fafsasThatHaveNeverBeenLoadedList.add(fafsaFromIsirFile);
 					}
@@ -841,26 +850,32 @@ public class IsirsUtil {
 
 	}
 
-	public static void printReportAndFileToLoad(ArrayList<String> fafsaTransToLoadList, ArrayList<String> fafsaTransToNotLoadList, ArrayList<String> fafsaTransToNotLoadLessList,
-			ArrayList<String> fafsaTransKidsNotInDB, String username, ArrayList<String> fafsasThatHaveNeverBeenLoadedList, ArrayList<String> fafsasFromIsirFilesThatAreAlreadyInSuspenseList, String saveDirectory)
+	public static ArrayList<String> printReportAndFileToLoad(ArrayList<String> fafsaTransToLoadList, ArrayList<String> fafsaTransToNotLoadList, ArrayList<String> fafsaTransToNotLoadLessList,
+			ArrayList<String> fafsaTransKidsNotInDB, String username, ArrayList<String> fafsasThatHaveNeverBeenLoadedList, ArrayList<String> fafsasFromIsirFilesThatAreAlreadyInSuspenseList, String saveDirectory, String aidYear)
 			throws IOException {
 		// create a timestamp to differentiate files
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmm").format(Calendar.getInstance().getTime());
+//		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmm").format(Calendar.getInstance().getTime());
 
 		// places files in specific folders in FA directory
-		String reportDir = saveDirectory + timeStamp + "/";
-		System.out.println("Creating file at the location: " + reportDir);
-		boolean success = (new File(reportDir)).mkdir();
+		Constants.serverReportPath = Constants.serverUploadSubDirPath + "/report/";
+		logger.info("Creating file at the location: " + Constants.serverReportPath);
+		boolean success = (new File(Constants.serverReportPath)).mkdir();
+		ArrayList<String> reportFilesList = new ArrayList<String>();
 		if (success) {
-			System.out.println("Writing to : " + reportDir);
+			logger.info("Writing to : " + Constants.serverReportPath);
 			// writes students to a report to a file in FA directory
-			FileWriter file2 = new FileWriter(reportDir + "reportForISIR_" + username + ".txt");
+			String reportForIsirPath = Constants.serverReportPath + "reportForISIR_" + username + ".txt";
+			FileWriter file2 = new FileWriter(reportForIsirPath);
 			PrintWriter report = new PrintWriter(file2);
 
 			// writes students who have not been loaded to a file in FA directory to load into BANNER
-			FileWriter file3 = new FileWriter(reportDir + "IDSA15OP.txt");
+			String idsaYYOPPath = Constants.serverReportPath + "IDSA" + aidYear.substring(2, 4) +"OP.txt";
+			FileWriter file3 = new FileWriter(idsaYYOPPath);
 			PrintWriter loadFile = new PrintWriter(file3);
 
+			reportFilesList.add(reportForIsirPath);
+			reportFilesList.add(idsaYYOPPath);
+			
 			report.println(" ");
 			report.println("These FAFSAs need to be loaded:");
 			report.println("--------------------------------");
@@ -1011,6 +1026,7 @@ public class IsirsUtil {
 			file2.close();
 
 		}
+		return reportFilesList;
 
 	}
 	
